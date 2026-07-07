@@ -23,6 +23,11 @@ if st.button('See today weather') or st.session_state.true_weather_button == Tru
 if st.session_state.true_weather_button == True:    
     if response.status_code == 200:
         st.divider()
-        st.write(f'City name : {data["name"]}')
-
-    
+        col1,col2,col3 = st.columns(3)
+        with col1:
+            st.metric('City',data['name'])
+        with col2:
+            st.metric("Temp",data["main"]["temp"])
+        with col3:
+            st.metric('Weather' ,data["weather"][0]["main"])
+        
