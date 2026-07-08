@@ -30,13 +30,15 @@ if st.button('See today weather') or st.session_state.true_weather_button == Tru
             if response_temp.status_code == 200:
                 temp_of_state.append(data_temp['main']['temp'])
                 temp_of_state_name.append(i)
-    
+
 
 
     response = requests.get(url)
     st.session_state.true_weather_button = True
 
     data = response.json()
+    temp_of_state.append(data['main']['temp'])
+    temp_of_state_name.append(data['name'])
 if st.session_state.true_weather_button == True:    
     if response.status_code == 200:
         st.divider()
