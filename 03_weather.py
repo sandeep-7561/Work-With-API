@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import plotly.express as px
 import pandas as pd
+import numpy as np
 
 load_dotenv()
 API_KEY = os.getenv("API_KEY_WEATHER")
@@ -48,6 +49,13 @@ if st.session_state.true_weather_button == True:
             st.metric('Weather' ,data["weather"][0]["main"])
         
         st.subheader(f"Temp of {data['name']}")
+        new_dict_for_graph = {}
+        for key,value in zip(temp_of_state,temp_of_state_name):
+            new_dict_for_graph[value] = key
         
-        st.write(temp_of_state,temp_of_state_name)
-        
+        df = pd.DataFrame({
+            'City':new_dict_for_graph.keys(),
+            'Temperature':new_dict_for_graph.values()
+        })
+        fig = px.line(df,x='City',y='Temperature')
+        st.plotly_chart(fig,use_container_width=True)        
