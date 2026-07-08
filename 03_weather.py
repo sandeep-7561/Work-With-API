@@ -3,6 +3,8 @@ import streamlit as st
 from india_cities import india
 from dotenv import load_dotenv
 import os
+import plotly.express as px
+import pandas as pd
 
 load_dotenv()
 API_KEY = os.getenv("API_KEY_WEATHER")
@@ -15,7 +17,21 @@ st.divider()
 state_name_input = st.selectbox('Select State Name:',[state for state in india])
 city_name_input= st.selectbox(f'Select {state_name_input} City Name',[city for city in india[state_name_input]])
 if st.button('See today weather') or st.session_state.true_weather_button == True:
-    url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name_input}&appid={API_KEY}&units=metric"
+    temp_of_state = []
+    temp_of_state_name = []
+    for i in india[state_name_input]:
+        if city_name_input == i:
+            url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name_input}&appid={API_KEY}&units=metric"
+        else:
+            city_temp_url = f"https://api.openweathermap.org/data/2.5/weather?q={i}&appid={API_KEY}&units=metric"
+            response_temp = requests.get(city_temp_url)
+            data_temp = response_temp.json()
+            if response_temp.status_code == 200:
+                temp_of_state.append(data_temp['main']['temp'])
+                temp_of_state_name.append(i)
+    
+
+
     response = requests.get(url)
     st.session_state.true_weather_button = True
 
@@ -27,7 +43,11 @@ if st.session_state.true_weather_button == True:
         with col1:
             st.metric('City',data['name'])
         with col2:
-            st.metric("Temp",data["main"]["temp"])
+            st.metric("Temp",f'{data["main"]["temp"]} °C')
         with col3:
             st.metric('Weather' ,data["weather"][0]["main"])
+        
+        st.subheader(f"Temp of {data['name']}")
+        
+        st.write(temp_of_state,temp_of_state_name)
         
