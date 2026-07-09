@@ -40,6 +40,7 @@ if st.button('See today weather') or st.session_state.true_weather_button == Tru
 
 
     response = requests.get(url)
+    response.raise_for_status()
     st.session_state.true_weather_button = True
 
     data = response.json()
