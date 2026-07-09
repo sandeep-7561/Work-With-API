@@ -70,20 +70,6 @@ if st.session_state.true_weather_button == True:
         lat = data['coord']['lat']
         lon = data['coord']['lon']
 
-        #m is a map object
-        m = folium.Map(
-            location=[22.9734, 78.6569],
-            zoom_start=5
-        )
-
-        folium.Marker(
-            location=[lat, lon],
-            popup=f"""
-        City : {data['name']}
-        Temp : {data['main']['temp']}°C
-        Weather : {data['weather'][0]['main']}
-        """
-        ).add_to(m)
         st.divider()
         col4,col5 = st.columns(2)
         with col4:
@@ -94,6 +80,21 @@ if st.session_state.true_weather_button == True:
             if st.button('Hide Map'):
                 st.session_state.show_my_location = False
         if st.session_state.show_my_location == True:
+            zoom_level = st.slider('Zoom Level',min_value=1,max_value=20)
+            #m is a map object
+            m = folium.Map(
+                location=[22.9734, 78.6569],
+                zoom_start=zoom_level
+            )
+
+            folium.Marker(
+                location=[lat, lon],
+                popup=f"""
+                City : {data['name']}
+                Temp : {data['main']['temp']}°C
+                Weather : {data['weather'][0]['main']}
+                """
+                ).add_to(m)
             st_folium(
                 m,
                 width=700,
