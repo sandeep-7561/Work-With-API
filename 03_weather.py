@@ -15,6 +15,10 @@ API_KEY = os.getenv("API_KEY_WEATHER")
 st.set_page_config('Weather WebApp: ',layout='centered')
 if 'true_weather_button' not in st.session_state:
     st.session_state.true_weather_button = False
+
+if 'show_my_location' not in st.session_state:
+    st.session_state.show_my_location = False
+
 st.title('Your Today Weather')
 st.divider()
 state_name_input = st.selectbox('Select State Name:',[state for state in india])
@@ -63,19 +67,35 @@ if st.session_state.true_weather_button == True:
         fig = px.line(df,x='City',y='Temperature',title=f'Temperature of {state_name_input} States:')
         st.plotly_chart(fig,use_container_width=True)       
         
+        lat = data['coord']['lat']
+        lon = data['coord']['lon']
+
         #m is a map object
         m = folium.Map(
             location=[22.9734, 78.6569],
             zoom_start=5
         )
-        
-        folium.Marker(
-            location=[23.0225,72.5714],
-            popup="Ahmedabad"
-        ).add_to(m)
 
-        st_folium(
-            m,
-            width=700,
-            height=500
-        )
+        folium.Marker(
+            location=[lat, lon],
+            popup=f"""
+        City : {data['name']}
+        Temp : {data['main']['temp']}°C
+        Weather : {data['weather'][0]['main']}
+        """
+        ).add_to(m)
+        st.divider()
+        col4,col5 = st.columns(2)
+        with col4:
+            if st.button('Show Map'):
+                st.session_state.show_my_location = True
+        
+        with col5:
+            if st.button('Hide Map'):
+                st.session_state.show_my_location = False
+        if st.session_state.show_my_location == True:
+            st_folium(
+                m,
+                width=700,
+                height=500
+            )
