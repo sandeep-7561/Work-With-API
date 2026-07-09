@@ -6,6 +6,8 @@ import os
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import folium
+from streamlit_folium import st_folium
 
 load_dotenv()
 API_KEY = os.getenv("API_KEY_WEATHER")
@@ -49,8 +51,7 @@ if st.session_state.true_weather_button == True:
             st.metric("Temp",f'{data["main"]["temp"]} °C')
         with col3:
             st.metric('Weather' ,data["weather"][0]["main"])
-        
-        st.subheader(f"Temp of {data['name']}")
+
         new_dict_for_graph = {}
         for key,value in zip(temp_of_state,temp_of_state_name):
             new_dict_for_graph[value] = key
@@ -59,5 +60,22 @@ if st.session_state.true_weather_button == True:
             'City':new_dict_for_graph.keys(),
             'Temperature':new_dict_for_graph.values()
         })
-        fig = px.line(df,x='City',y='Temperature')
-        st.plotly_chart(fig,use_container_width=True)        
+        fig = px.line(df,x='City',y='Temperature',title=f'Temperature of {state_name_input} States:')
+        st.plotly_chart(fig,use_container_width=True)       
+        
+        #m is a map object
+        m = folium.Map(
+            location=[22.9734, 78.6569],
+            zoom_start=5
+        )
+        
+        folium.Marker(
+            location=[23.0225,72.5714],
+            popup="Ahmedabad"
+        ).add_to(m)
+
+        st_folium(
+            m,
+            width=700,
+            height=500
+        )
