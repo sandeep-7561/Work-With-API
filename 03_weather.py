@@ -100,3 +100,6 @@ if st.session_state.true_weather_button == True:
                 width=700,
                 height=500
             )
+        
+    else:
+        st.warning('404 not found')
